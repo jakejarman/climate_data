@@ -16,6 +16,7 @@ library(modifiedmk)
 library(changepoint)
 library(lmerTest)
 library(lmtest)
+# change
 
 hawera_rainfall <- read_csv("rainfall.csv",
                             col_names = T,

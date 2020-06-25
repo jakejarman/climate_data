@@ -1,3 +1,7 @@
+options(usethis.protocol = "ssh")
+
 library(usethis)
 usethis::use_git()
-3
+
+
+usethis::use_github()
