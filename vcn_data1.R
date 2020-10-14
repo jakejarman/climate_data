@@ -2440,4 +2440,56 @@ plot(hawera_cliflo_2,
      2, ggtheme = "light")
 
 
+#### Climate averages during the mating period ####
+
+mating_weather <- weather %>% 
+  select(day,
+         min_temp,
+         max_temp,
+         ave_temp,
+         wind_run,
+         rain) %>% 
+  filter(day > as.Date("2018-06-06"))
+
+AUT_1 <- interval(as.Date("2018-06-06"), (as.Date("2018-06-06") + days(77)) )
+AUT_2 <- interval(as.Date("2019-06-05"), (as.Date("2019-06-05") + days(77)) )
+
+SPR_1 <- interval(as.Date("2018-10-01"), (as.Date("2018-10-01") + days(77)))
+SPR_2 <- interval(as.Date("2019-10-01"), (as.Date("2019-10-01") + days(77)))
+
+
+mating_weather <- mating_weather %>% 
+  mutate(treatment = 
+           case_when(
+             day %within% AUT_1 ~ "AUT",
+             day %within% AUT_2 ~ "AUT",
+             day %within% SPR_1 ~ "SPR",
+             day %within% SPR_2 ~ "SPR"),
+         mating = case_when(
+           day %within% AUT_1 ~ 1,
+           day %within% AUT_2 ~ 2,
+           day %within% SPR_1 ~ 1,
+           day %within% SPR_2 ~ 2)) %>% 
+  filter(!is.na(mating)) %>% 
+  pivot_longer(min_temp:rain,
+               names_to = "my_key",
+               values_to = "my_value")
+
+ggplot(mating_weather,
+       aes(x = treatment,
+           y = my_value)) +
+  geom_boxplot() +
+  stat_compare_means(method = "kruskal.test",
+                     label = "p.signif") +
+  stat_summary(fun.y = median, colour = "darkred", geom = "point", size = 3, show.legend = FALSE) +
+  stat_summary(fun.y = median, colour = "red", 
+               geom = "text", show.legend = FALSE, 
+               vjust = -0.7, aes(label = round(..y.., digits = 1))) +
+  facet_wrap(my_key~mating,
+             scales = "free")
+
+
+
+
+
               
